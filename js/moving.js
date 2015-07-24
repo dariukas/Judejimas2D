@@ -4,26 +4,39 @@
 	Date: 2015-07-24 (paper.js 0.9.23)
 */
 
-var vessel, particle, parameters, gui;
-var particles = [];
+var vessel, particles, particle, parameters, gui;
+var vessel0;
 var x0, y0 =0;
 var radius = 10;
 
 parameters = {
 number : 5,
 speed : 10,
-force : 0
+force : 0,
+open : false
 };
 
 init();
+initParticles();
 gui();
 
+//creating the vessel
 function init(){
-//Creating the vessel
-vessel = new Path.Circle(new Point(200, 200), 100);
-vessel.strokeColor = 'green';
-//Creating the particles
-for(var i=0; i<5; i++){
+vessel0 = new Path.Circle(new Point(200, 200), 100);
+vessel0.strokeColor = 'green';
+if(parameters.open==true){
+vessel0.split(0, 0.5);
+vessel = vessel0.split(0, 1);
+vessel.remove();
+}else{
+vessel = vessel0;
+}
+}
+
+//creating the particles
+function initParticles(){
+particles=[];//to clear the array
+for(var i=0; i<parameters.number; i++){
 particle = new Path.Circle(new Point(200, 200), radius);
 particle.strokeColor = 'brown';
 particles.push(particle);
@@ -33,9 +46,10 @@ particles.push(particle);
 //GUI
 function gui (){
 gui = new dat.GUI();
-gui.add(parameters, 'number', 0, 100).onFinishChange(function (value){number = value; project.activeLayer.removeChildren(); init();});
-gui.add(parameters, 'speed', 0, 2*radius).step(1).onFinishChange(function (value){speed = value;});//speed no more than double radius
-gui.add(parameters, 'force', -2*radius, 2*radius).onFinishChange(function (value){pushing(value);});
+gui.add(parameters, 'number', 0, 100).onFinishChange(function (value){ number = value; project.activeLayer.removeChildren(); init(); initParticles() });
+gui.add(parameters, 'speed', 0, 2*radius).step(1).onFinishChange(function (value){ speed = value; });//speed no more than double radius
+gui.add(parameters, 'force', -2*radius, 2*radius).onFinishChange(function (value){ pushing(value); });
+gui.add(parameters, 'open').onFinishChange(function (value){ path.remove(); init(); });
 }
 
 //moving the particles
