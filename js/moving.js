@@ -77,9 +77,9 @@ particle.position.y+=-2*(particle.position.y-y0);
 }
 
 //force caused moving
-function pushing(value){
+function pushing(move){
 for(var i in particles){
-movingY(particles[i], value);
+movingY(particles[i], move);
 }
 }
 
