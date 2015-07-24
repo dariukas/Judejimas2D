@@ -11,7 +11,8 @@ var radius = 10;
 
 parameters = {
 number : 5,
-speed : 10
+speed : 10,
+force : 0
 };
 
 init();
@@ -32,8 +33,20 @@ particles.push(particle);
 //GUI
 function gui (){
 gui = new dat.GUI();
-gui.add(parameters, 'number', 0, 100).onFinishChange(function (value){number = value; init();});
+gui.add(parameters, 'number', 0, 100).onFinishChange(function (value){number = value; project.activeLayer.removeChildren(); init();});
 gui.add(parameters, 'speed', 0, 2*radius).step(1).onFinishChange(function (value){speed = value;});//speed no more than double radius
+gui.add(parameters, 'force', -max, max).onFinishChange(function (value){pushing(value);});
+}
+
+function pushing(force){
+y0 = particles[i].position.y;
+particles[i].position.y=y0+force;
+
+if(particles[i].getIntersections(vessel).length>0){
+console.log("intersect!");
+particles[i].position.y+=-2*(particles[i].position.y-y0);
+}
+}	
 }
 
 //Moving the particles
