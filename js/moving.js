@@ -35,31 +35,43 @@ function gui (){
 gui = new dat.GUI();
 gui.add(parameters, 'number', 0, 100).onFinishChange(function (value){number = value; project.activeLayer.removeChildren(); init();});
 gui.add(parameters, 'speed', 0, 2*radius).step(1).onFinishChange(function (value){speed = value;});//speed no more than double radius
-gui.add(parameters, 'force', -max, max).onFinishChange(function (value){pushing(value);});
+gui.add(parameters, 'force', -2*radius, 2*radius).onFinishChange(function (value){pushing(value);});
 }
 
-function pushing(force){
-y0 = particles[i].position.y;
-particles[i].position.y=y0+force;
+//moving the particles
+function movingX(particle, move){
+x0 = particle.position.x;
+y0 = particle.position.y;
+particle.position.x=x0+move;
 
-if(particles[i].getIntersections(vessel).length>0){
-console.log("intersect!");
-particles[i].position.y+=-2*(particles[i].position.y-y0);
+if(particle.getIntersections(vessel).length>0){
+particle.position.x+=-2*(particle.position.x-x0);
+particle.position.y+=-2*(particle.position.y-y0);
 }
-}	
 }
 
-//Moving the particles
+//moving the particles
+function movingY(particle, move){
+x0 = particle.position.x;
+y0 = particle.position.y;
+particle.position.y=y0+move;
+
+if(particle.getIntersections(vessel).length>0){
+particle.position.x+=-2*(particle.position.x-x0);
+particle.position.y+=-2*(particle.position.y-y0);
+}
+}
+
+//force caused moving
+function pushing(value){
+for(var i in particles){
+movingY(particles[i], value);
+}
+}
+
 function onFrame(event) {
 for(var i in particles){
-x0 = particles[i].position.x;
-y0 = particles[i].position.y;
-
-particles[i].position.x=x0+parameters.speed*(Math.random()-0.5);
-particles[i].position.y=y0+parameters.speed*(Math.random()-0.5);
-if(particles[i].getIntersections(vessel).length>0){
-particles[i].position.x+=-2*(particles[i].position.x-x0);
-particles[i].position.y+=-2*(particles[i].position.y-y0);
-}
+movingX(particles[i], parameters.speed*(Math.random()-0.5));
+movingY(particles[i], parameters.speed*(Math.random()-0.5));
 }
 }
